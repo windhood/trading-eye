@@ -4,13 +4,14 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app import crud, models, schemas
-from app.api import deps
+from app.api import deps, error_messages
 
 router = APIRouter()
 
 
-@router.get("/", response_model=List[schemas.Item])
-def read_items(
+
+@router.get("/", response_model=List[schemas.Portfolio])
+def read_portfolios(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
     limit: int = 100,
@@ -20,50 +21,50 @@ def read_items(
     Retrieve items.
     """
     if crud.user.is_superuser(current_user):
-        items = crud.item.get_multi(db, skip=skip, limit=limit)
+        portfolios = crud.portfolio.get_multi(db, skip=skip, limit=limit)
     else:
-        items = crud.item.get_multi_by_owner(
+        portfolios = crud.portfolio.get_multi_by_owner(
             db=db, owner_id=current_user.id, skip=skip, limit=limit
         )
-    return items
+    return portfolios
 
 
-@router.post("/", response_model=schemas.Item)
-def create_item(
+@router.post("/", response_model=schemas.Portfolio)
+def create_portfolio(
     *,
     db: Session = Depends(deps.get_db),
-    item_in: schemas.ItemCreate,
+    portfolio_in: schemas.PortfolioCreate,
     current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     """
     Create new item.
     """
-    item = crud.item.create_with_owner(db=db, obj_in=item_in, owner_id=current_user.id)
-    return item
+    portfolio = crud.portfolio.create_with_owner(db=db, obj_in=portfolio_in, owner_id=current_user.id)
+    return portfolio
 
 
-@router.put("/{id}", response_model=schemas.Item)
-def update_item(
+@router.put("/{id}", response_model=schemas.Portfolio)
+def update_portfolio(
     *,
     db: Session = Depends(deps.get_db),
     id: int,
-    item_in: schemas.ItemUpdate,
+    portfolio_in: schemas.PortfolioUpdate,
     current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     """
     Update an item.
     """
-    item = crud.item.get(db=db, id=id)
-    if not item:
-        raise HTTPException(status_code=404, detail="Item not found")
-    if not crud.user.is_superuser(current_user) and (item.owner_id != current_user.id):
-        raise HTTPException(status_code=400, detail="Not enough permissions")
-    item = crud.item.update(db=db, db_obj=item, obj_in=item_in)
-    return item
+    portfolio = crud.portfolio.get(db=db, id=id)
+    if not portfolio:
+        raise HTTPException(status_code=404, detail=error_messages.error_portfolio_not_found)
+    if not crud.user.is_superuser(current_user) and (portfolio.owner_id != current_user.id):
+        raise HTTPException(status_code=400, detail=error_messages.error_not_enough_permission)
+    portfolio = crud.portfolio.update(db=db, db_obj=portfolio, obj_in=portfolio_in)
+    return portfolio
 
 
-@router.get("/{id}", response_model=schemas.Item)
-def read_item(
+@router.get("/{id}", response_model=schemas.Portfolio)
+def read_portfolio(
     *,
     db: Session = Depends(deps.get_db),
     id: int,
@@ -72,16 +73,16 @@ def read_item(
     """
     Get item by ID.
     """
-    item = crud.item.get(db=db, id=id)
-    if not item:
-        raise HTTPException(status_code=404, detail="Item not found")
-    if not crud.user.is_superuser(current_user) and (item.owner_id != current_user.id):
-        raise HTTPException(status_code=400, detail="Not enough permissions")
-    return item
+    portfolio = crud.portfolio.get(db=db, id=id)
+    if not portfolio:
+        raise HTTPException(status_code=404, detail=error_messages.error_portfolio_not_found)
+    if not crud.user.is_superuser(current_user) and (portfolio.owner_id != current_user.id):
+        raise HTTPException(status_code=400, detail=error_messages.error_not_enough_permission)
+    return portfolio
 
 
-@router.delete("/{id}", response_model=schemas.Item)
-def delete_item(
+@router.delete("/{id}", response_model=schemas.Portfolio)
+def delete_portfolio(
     *,
     db: Session = Depends(deps.get_db),
     id: int,
@@ -90,10 +91,10 @@ def delete_item(
     """
     Delete an item.
     """
-    item = crud.item.get(db=db, id=id)
-    if not item:
-        raise HTTPException(status_code=404, detail="Item not found")
-    if not crud.user.is_superuser(current_user) and (item.owner_id != current_user.id):
-        raise HTTPException(status_code=400, detail="Not enough permissions")
-    item = crud.item.remove(db=db, id=id)
-    return item
+    portfolio = crud.portfolio.get(db=db, id=id)
+    if not portfolio:
+        raise HTTPException(status_code=404, detail=error_messages.error_portfolio_not_found)
+    if not crud.user.is_superuser(current_user) and (portfolio.owner_id != current_user.id):
+        raise HTTPException(status_code=400, detail=error_messages.error_not_enough_permission)
+    portfolio = crud.portfolio.remove(db=db, id=id)
+    return portfolio
