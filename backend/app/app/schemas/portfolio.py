@@ -1,17 +1,17 @@
 from typing import Optional
 
 from pydantic import BaseModel
-
+from app.models.enums import Currency
 
 # Shared properties
 class PortfolioBase(BaseModel):
     title: Optional[str] 
     description: Optional[str] = None
-    currency: Optional[str] = "USD"
-    max_risk_per_share: Optional[int] = None
-    max_risk_per_trade: Optional[int] = None
-    max_capital_per_trade: Optional[int] = None
-    initial_balance: Optional[int]
+    currency: Optional[Currency] = Currency.USD
+    max_risk_per_share: Optional[float] = None
+    max_risk_per_trade: Optional[float] = None
+    max_capital_per_trade: Optional[float] = None
+    initial_balance: Optional[float]
 
 
 # Properties to receive on item creation
