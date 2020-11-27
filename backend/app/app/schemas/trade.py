@@ -6,9 +6,9 @@ from datetime import datetime
 
 # Shared properties
 class TradeBase(BaseModel):
-    ticker: str
+    # ticker: str
     name: Optional[str] = None
-    type: TradeType
+    type: Optional[TradeType] = None
     initial_position: Optional[int] = None
     initial_risk: Optional[float] = None
     current_position: Optional[int] = None
@@ -28,6 +28,8 @@ class TradeBase(BaseModel):
 
 # Properties to receive on Trade creation
 class TradeCreate(TradeBase):
+    ticker: str
+    type: TradeType
     initial_position: int
     initial_risk: float
     current_position: int
@@ -45,6 +47,7 @@ class TradeUpdate(TradeBase):
 class TradeInDBBase(TradeBase):
     id: int
     portfolio_id: int
+    ticker: str
 
     class Config:
         orm_mode = True

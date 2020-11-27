@@ -58,7 +58,7 @@ def update_portfolio(
     if not portfolio:
         raise HTTPException(status_code=404, detail=error_messages.error_portfolio_not_found)
     if not crud.user.is_superuser(current_user) and (portfolio.owner_id != current_user.id):
-        raise HTTPException(status_code=400, detail=error_messages.error_not_enough_permission)
+        raise HTTPException(status_code=403, detail=error_messages.error_not_enough_permission)
     portfolio = crud.portfolio.update(db=db, db_obj=portfolio, obj_in=portfolio_in)
     return portfolio
 
@@ -77,7 +77,7 @@ def read_portfolio(
     if not portfolio:
         raise HTTPException(status_code=404, detail=error_messages.error_portfolio_not_found)
     if not crud.user.is_superuser(current_user) and (portfolio.owner_id != current_user.id):
-        raise HTTPException(status_code=400, detail=error_messages.error_not_enough_permission)
+        raise HTTPException(status_code=403, detail=error_messages.error_not_enough_permission)
     return portfolio
 
 
@@ -95,6 +95,6 @@ def delete_portfolio(
     if not portfolio:
         raise HTTPException(status_code=404, detail=error_messages.error_portfolio_not_found)
     if not crud.user.is_superuser(current_user) and (portfolio.owner_id != current_user.id):
-        raise HTTPException(status_code=400, detail=error_messages.error_not_enough_permission)
+        raise HTTPException(status_code=403, detail=error_messages.error_not_enough_permission)
     portfolio = crud.portfolio.remove(db=db, id=id)
     return portfolio

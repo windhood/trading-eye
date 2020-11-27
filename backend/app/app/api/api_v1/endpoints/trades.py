@@ -49,7 +49,8 @@ def create_trade(
     portfolio = service.find_portfolio(db, current_user, trade_in.portfolio_id)
     logging.debug(f"portfolio is: {portfolio}")
     # trade = crud.trade.create_with_owner(db=db, obj_in=trade_in, owner_id=current_user.id)
-    trade = crud.trade.create_with_portfolio(db=db, obj_in=trade_in, portfolio_id= trade_in.portfolio_id)
+    # trade = crud.trade.create_with_portfolio(db=db, obj_in=trade_in, portfolio_id= trade_in.portfolio_id)
+    trade = crud.trade.create(db=db, obj_in=trade_in)
     # TODO should create first execution too
     return trade
 
@@ -69,7 +70,7 @@ def update_trade(
     if not trade:
         raise HTTPException(status_code=404, detail=error_messages.error_trade_not_found)
     if not crud.user.is_superuser(current_user) and (trade.portfolio.owner_id != current_user.id):
-        raise HTTPException(status_code=400, detail=error_messages.error_not_enough_permission)
+        raise HTTPException(status_code=403, detail=error_messages.error_not_enough_permission)
     trade = crud.trade.update(db=db, db_obj=trade, obj_in=trade_in)
     return trade
 
@@ -88,7 +89,7 @@ def read_trade(
     if not trade:
         raise HTTPException(status_code=404, detail=error_messages.error_trade_not_found)
     if not crud.user.is_superuser(current_user) and (trade.portfolio.owner_id != current_user.id):
-        raise HTTPException(status_code=400, detail=error_messages.error_not_enough_permission)
+        raise HTTPException(status_code=403, detail=error_messages.error_not_enough_permission)
     return trade
 
 
@@ -106,6 +107,6 @@ def delete_trade(
     if not trade:
         raise HTTPException(status_code=404, detail=error_messages.error_trade_not_found)
     if not crud.user.is_superuser(current_user) and (trade.portfolio.owner_id != current_user.id):
-        raise HTTPException(status_code=400, detail=error_messages.error_not_enough_permission)
+        raise HTTPException(status_code=403, detail=error_messages.error_not_enough_permission)
     trade = crud.trade.remove(db=db, id=id)
     return trade
