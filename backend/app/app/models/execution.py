@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import Column, ForeignKey, Integer, String, Float, Enum, Text, DateTime
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql.expression import null
 
 from app.db.base_class import Base, TimestampMixin
 from .enums import ExecutionType
@@ -20,6 +21,8 @@ class Execution(Base, TimestampMixin):
     target_price = Column(Float, nullable=True)
     type = Column(Enum(ExecutionType))
     executed_at = Column(DateTime)
+    setup = Column(String, nullable=True)
+    reason = Column(String, nullable=True)
     notes = Column(Text, nullable=True)
 
     trade_id = Column(Integer, ForeignKey("trade.id"))

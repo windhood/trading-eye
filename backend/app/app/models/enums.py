@@ -6,10 +6,15 @@ class TradeType(str, Enum):
     CASH_IN = "CASH_IN"
     CASH_OUT = "CASH_OUT"
 
+class TradeStatus(str, Enum):
+    OPEN = "OPEN"
+    WIN = "WIN"
+    LOSS = "LOSS"
+    BE = "BE"
+
 class ExecutionType(str, Enum):
-    INITIAL = "INITIAL"
-    ADD = "ADD"
-    EXIT = "EXIT"
+    BUY = "BUY"
+    SELL = "SELL"
 
 class Currency(str, Enum):
     USD = "USD"
