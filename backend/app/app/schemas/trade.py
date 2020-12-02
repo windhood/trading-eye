@@ -9,16 +9,21 @@ class TradeBase(BaseModel):
     # ticker: str
     name: Optional[str] = None
     type: Optional[TradeType] = None
-    initial_position: Optional[int] = None
-    initial_risk: Optional[float] = None
-    current_position: Optional[int] = None
-    current_risk: Optional[float] = None
-    profit_lost: Optional[float] = None
     started_at: Optional[datetime] = None
     closed_at: Optional[datetime] = None
-    risk_ratio: Optional[float] = None
+    # risk_ratio: Optional[float] = None
+    entry_price: Optional[float] = None
+    exit_price: Optional[float] = None
+    total_shares: Optional[int] = None
+    open_shares: Optional[float] = None
+    stop_price: Optional[float] = None
+    target_price: Optional[float] = None
+    net_profit: Optional[float] = None
+    setup: Optional[str] = None
+    rmultiple: Optional[float] = None
     commissions: Optional[float] = 0.0
     portfolio_balance: Optional[float] = None
+    notes: Optional[str] = None
 
     #portfolio_id = Column(Integer, ForeignKey("portfolio.id"))
     #portfolio = relationship("Portfolio", back_populates="trades")
@@ -29,11 +34,7 @@ class TradeBase(BaseModel):
 # Properties to receive on Trade creation
 class TradeCreate(TradeBase):
     ticker: str
-    type: TradeType
-    initial_position: int
-    initial_risk: float
-    current_position: int
-    current_risk: float
+    type: TradeType    
     started_at: datetime
     portfolio_balance: float
     portfolio_id: int

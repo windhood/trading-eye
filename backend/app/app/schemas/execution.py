@@ -13,6 +13,8 @@ class ExecutionBase(BaseModel):
     target_price: Optional[float] = None
     type: ExecutionType
     executed_at: datetime = datetime.now
+    setup: Optional[str] = None
+    reason: Optional[str] = None
     notes: Optional[str] = None
 
 
