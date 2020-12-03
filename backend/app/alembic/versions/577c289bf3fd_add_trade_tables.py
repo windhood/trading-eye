@@ -1,8 +1,8 @@
-"""add portofolio, trade and execution
+"""add trade tables
 
-Revision ID: 64a2c0267548
+Revision ID: 577c289bf3fd
 Revises: d4867f3a4c0a
-Create Date: 2020-11-19 07:40:24.804098
+Create Date: 2020-12-03 19:36:59.449387
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '64a2c0267548'
+revision = '577c289bf3fd'
 down_revision = 'd4867f3a4c0a'
 branch_labels = None
 depends_on = None
@@ -40,16 +40,21 @@ def upgrade():
     sa.Column('ticker', sa.String(length=50), nullable=True),
     sa.Column('name', sa.String(length=200), nullable=True),
     sa.Column('type', sa.Enum('LONG', 'SHORT', 'CASH_IN', 'CASH_OUT', name='tradetype'), nullable=True),
-    sa.Column('initial_position', sa.Integer(), nullable=True),
-    sa.Column('initial_risk', sa.Float(), nullable=True),
-    sa.Column('current_position', sa.Integer(), nullable=True),
-    sa.Column('current_risk', sa.Float(), nullable=True),
-    sa.Column('profit_lost', sa.Float(), nullable=True),
     sa.Column('started_at', sa.DateTime(), nullable=True),
     sa.Column('closed_at', sa.DateTime(), nullable=True),
-    sa.Column('risk_ratio', sa.Float(), nullable=True),
+    sa.Column('entry_price', sa.Float(), nullable=True),
+    sa.Column('exit_price', sa.Float(), nullable=True),
+    sa.Column('total_shares', sa.Integer(), nullable=True),
+    sa.Column('open_shares', sa.Integer(), nullable=True),
+    sa.Column('stop_price', sa.Float(), nullable=True),
+    sa.Column('target_price', sa.Float(), nullable=True),
+    sa.Column('net_profit', sa.Float(), nullable=True),
+    sa.Column('setup', sa.String(), nullable=True),
+    sa.Column('rmultiple', sa.Float(), nullable=True),
     sa.Column('commissions', sa.Float(), nullable=True),
     sa.Column('portfolio_balance', sa.Float(), nullable=True),
+    sa.Column('status', sa.Enum('OPEN', 'WIN', 'LOSS', 'BE', name='tradestatus'), nullable=True),
+    sa.Column('notes', sa.Text(), nullable=True),
     sa.Column('portfolio_id', sa.Integer(), nullable=True),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
@@ -67,8 +72,10 @@ def upgrade():
     sa.Column('commission', sa.Float(), nullable=True),
     sa.Column('stop_price', sa.Float(), nullable=True),
     sa.Column('target_price', sa.Float(), nullable=True),
-    sa.Column('type', sa.Enum('INITIAL', 'ADD', 'EXIT', name='executiontype'), nullable=True),
+    sa.Column('type', sa.Enum('BUY', 'SELL', name='executiontype'), nullable=True),
     sa.Column('executed_at', sa.DateTime(), nullable=True),
+    sa.Column('setup', sa.String(), nullable=True),
+    sa.Column('reason', sa.String(), nullable=True),
     sa.Column('notes', sa.Text(), nullable=True),
     sa.Column('trade_id', sa.Integer(), nullable=True),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
