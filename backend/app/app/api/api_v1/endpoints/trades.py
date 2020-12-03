@@ -38,7 +38,7 @@ def read_trades(
 def create_trade(
     *,
     db: Session = Depends(deps.get_db),
-    trade_in: schemas.TradeCreate,
+    trade_in: schemas.NewTrade,
     current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     """
@@ -50,7 +50,7 @@ def create_trade(
     logging.debug(f"portfolio is: {portfolio}")
     # trade = crud.trade.create_with_owner(db=db, obj_in=trade_in, owner_id=current_user.id)
     # trade = crud.trade.create_with_portfolio(db=db, obj_in=trade_in, portfolio_id= trade_in.portfolio_id)
-    trade = crud.trade.create(db=db, obj_in=trade_in)
+    trade = crud.trade.create_with_executions(db=db, obj_in=trade_in, portfolio=portfolio)
     # TODO should create first execution too
     return trade
 

@@ -33,10 +33,15 @@ class TradeBase(BaseModel):
 
 
 # Properties to receive on Trade creation
-class TradeCreate(BaseModel):
+class NewTrade(BaseModel):
     ticker: str
     portfolio_id: int
+    type: Optional[TradeType] = TradeType.LONG
     executions: List[ExecutionCreate]
+
+class TradeCreate(TradeBase):
+    ticker: str
+    portfolio_id: int
 
 # Properties to receive on Trade update
 class TradeUpdate(TradeBase):
