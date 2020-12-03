@@ -1,14 +1,15 @@
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel
 from app.models.enums import TradeType
 from datetime import datetime
+from .execution import Execution, ExecutionCreate
 
 # Shared properties
 class TradeBase(BaseModel):
     # ticker: str
     name: Optional[str] = None
-    type: Optional[TradeType] = None
+    type: Optional[TradeType] = TradeType.LONG
     started_at: Optional[datetime] = None
     closed_at: Optional[datetime] = None
     # risk_ratio: Optional[float] = None
@@ -32,12 +33,10 @@ class TradeBase(BaseModel):
 
 
 # Properties to receive on Trade creation
-class TradeCreate(TradeBase):
+class TradeCreate(BaseModel):
     ticker: str
-    type: TradeType    
-    started_at: datetime
-    portfolio_balance: float
     portfolio_id: int
+    executions: List[ExecutionCreate]
 
 # Properties to receive on Trade update
 class TradeUpdate(TradeBase):

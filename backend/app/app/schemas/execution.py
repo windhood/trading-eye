@@ -12,7 +12,7 @@ class ExecutionBase(BaseModel):
     stop_price: Optional[float] = None
     target_price: Optional[float] = None
     type: ExecutionType
-    executed_at: datetime = datetime.now
+    executed_at: datetime
     setup: Optional[str] = None
     reason: Optional[str] = None
     notes: Optional[str] = None
