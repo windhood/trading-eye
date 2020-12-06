@@ -37,7 +37,7 @@ class CRUDTrade(CRUDBase[Trade, TradeCreate, TradeCreate]):
         trade_model.name = obj_in.ticker
         trade_model.type = obj_in.type
         trade_model.portfolio_balance = portfolio.initial_balance
-        execution_models: List[Execution] = [Execution(**jsonable_encoder(el)) for el in obj_in.executions]
+        execution_models: List[Execution] = [Execution(**jsonable_encoder(el), ticker=obj_in.ticker) for el in obj_in.executions]
         trade_model.executions = execution_models
         return trade_model
 

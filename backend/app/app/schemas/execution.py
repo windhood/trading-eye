@@ -5,7 +5,7 @@ from app.models.enums import ExecutionType
 from datetime import datetime
 # Shared properties
 class ExecutionBase(BaseModel):
-    ticker: str
+    # ticker: str
     price: Optional[float] = None
     shares: Optional[int] = None
     commission: Optional[float] = 7.00
