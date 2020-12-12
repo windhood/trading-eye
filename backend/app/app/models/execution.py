@@ -27,3 +27,6 @@ class Execution(Base, TimestampMixin):
 
     trade_id = Column(Integer, ForeignKey("trade.id"))
     trade = relationship("Trade", back_populates="executions")
+
+    def __repr__(self): 
+        return f'{{{self.type} {self.shares} shares at ${self.price} on {self.executed_at}, id={self.id}}}'

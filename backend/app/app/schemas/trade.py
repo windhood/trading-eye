@@ -66,3 +66,7 @@ class Trade(TradeInDBBase):
 # Properties properties stored in DB
 class TradeInDB(TradeInDBBase):
     pass
+
+# Properties properties includes executions
+class TradeDetail(Trade):
+    executions: List[Execution] = None

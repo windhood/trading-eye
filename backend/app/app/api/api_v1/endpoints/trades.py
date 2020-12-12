@@ -1,3 +1,4 @@
+from app.schemas.execution import ExecutionCreate
 import logging
 from typing import Any, List, Optional
 
@@ -75,7 +76,7 @@ def update_trade(
     return trade
 
 
-@router.get("/{id}", response_model=schemas.Trade)
+@router.get("/{id}", response_model=schemas.TradeDetail)
 def read_trade(
     *,
     db: Session = Depends(deps.get_db),
@@ -109,4 +110,49 @@ def delete_trade(
     if not crud.user.is_superuser(current_user) and (trade.portfolio.owner_id != current_user.id):
         raise HTTPException(status_code=403, detail=error_messages.error_not_enough_permission)
     trade = crud.trade.remove(db=db, id=id)
+    return trade
+
+'''
+Routes to handle executions
+'''
+@router.post("/{id}/executions", response_model=schemas.TradeDetail)
+def add_executions(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: int,
+    executions: List[ExecutionCreate],
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Add a list of executions to a trade.
+    """
+    trade = crud.trade.get(db=db, id=id)
+    if not trade:
+        raise HTTPException(status_code=404, detail=error_messages.error_trade_not_found)
+    if not crud.user.is_superuser(current_user) and (trade.portfolio.owner_id != current_user.id):
+        raise HTTPException(status_code=403, detail=error_messages.error_not_enough_permission)
+    
+    trade = crud.trade.add_executions(db=db, trade=trade, executions=executions)
+    # TODO should create first execution too
+    return trade
+
+@router.put("/{trade_id}/executions/{id}", response_model=schemas.TradeDetail)
+def update_execution(
+    *,
+    db: Session = Depends(deps.get_db),
+    trade_id: int,
+    id: int,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Add a list of executions to a trade.
+    """
+    trade = crud.trade.get(db=db, id=id)
+    if not trade:
+        raise HTTPException(status_code=404, detail=error_messages.error_trade_not_found)
+    if not crud.user.is_superuser(current_user) and (trade.portfolio.owner_id != current_user.id):
+        raise HTTPException(status_code=403, detail=error_messages.error_not_enough_permission)
+    
+    trade = crud.trade.add_executions(db=db, trade=trade, executions=executions)
+    # TODO should create first execution too
     return trade
