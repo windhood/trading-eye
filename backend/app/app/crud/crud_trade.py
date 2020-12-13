@@ -28,7 +28,8 @@ class CRUDTrade(CRUDBase[Trade, TradeCreate, TradeCreate]):
         # obj_in_data = jsonable_encoder(obj_in)
         # db_obj = self.model(**obj_in_data)
         db_obj = self.build_model_from(obj_in, portfolio)
-        db_obj = self.setup_from_executions(db_obj)
+        db_obj.calculate_trade_details()
+        #db_obj = self.setup_from_executions(db_obj)
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
@@ -60,8 +61,28 @@ class CRUDTrade(CRUDBase[Trade, TradeCreate, TradeCreate]):
     def add_executions(
         self, db: Session, *, trade: Trade, executions: List[ExecutionCreate]
     ) -> Trade:
-        execution_models: List[Execution] = [Execution(**jsonable_encoder(el), ticker=trade.ticker) for el in executions]
-        trade.executions.extend(execution_models)
+        for ex in executions:
+            entity = Execution(**jsonable_encoder(ex), ticker=trade.ticker)
+            entity.executed_at = ex.executed_at
+            trade.executions.append(entity)
+        #execution_models: List[Execution] = [Execution(**jsonable_encoder(el), executed_at=el.executed_at, ticker=trade.ticker) for el in executions]
+        #for ex in execution_models:
+        #    print(f'object is {ex}, executed_at type is {type(ex.executed_at)}, isinstanceof: {isinstance(ex.executed_at, str)}')
+        #trade.executions.extend(execution_models)
+        print("\nafter merge")
+        for ex in trade.executions:
+            print(f'object is:{ex}, type is {type(ex)}, executed_at type is {type(ex.executed_at)}')
+            
+        trade.calculate_trade_details()
+        db.add(trade)
+        db.commit()
+        db.refresh(trade)
+        return trade
+
+    def update_execution(
+        self, db: Session, *, trade: Trade
+    ) -> Trade:
+        trade.calculate_trade_details()
         db.add(trade)
         db.commit()
         db.refresh(trade)
@@ -75,8 +96,6 @@ class CRUDTrade(CRUDBase[Trade, TradeCreate, TradeCreate]):
         execution_models: List[Execution] = [Execution(**jsonable_encoder(el), ticker=obj_in.ticker) for el in obj_in.executions]
         trade_model.executions = execution_models
         return trade_model
-
-    def setup_from_executions(self, entity: Trade) -> None:
-        entity.calculate_trade_details
+    
 
 trade = CRUDTrade(Trade)

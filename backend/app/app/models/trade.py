@@ -48,7 +48,7 @@ class Trade(Base, TimestampMixin):
      
     def calculate_trade_details(self) -> None:         
         #customObjects.sort(key=lambda x: x.date, reverse=True)        
-        self.executions.sort(key=lambda x: x.executed_at)
+        self.executions.sort(key=lambda x: x.executed_at.timestamp())
         self.started_at = self.executions[0].executed_at        
         self.commissions = 0
 

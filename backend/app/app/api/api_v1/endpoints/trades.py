@@ -142,17 +142,49 @@ def update_execution(
     db: Session = Depends(deps.get_db),
     trade_id: int,
     id: int,
+    execution_in: schemas.ExecutionUpdate,
     current_user: models.User = Depends(deps.get_current_active_user),
 ) -> Any:
     """
-    Add a list of executions to a trade.
+    Update execution in a trade.
     """
-    trade = crud.trade.get(db=db, id=id)
+    trade = crud.trade.get(db=db, trade_id=id)
+    if not trade:
+        raise HTTPException(status_code=404, detail=error_messages.error_trade_not_found)
+    if not crud.user.is_superuser(current_user) and (trade.portfolio.owner_id != current_user.id):
+        raise HTTPException(status_code=403, detail=error_messages.error_not_enough_permission)
+    # use list comprehension or filter lambda
+    # an_iterator = filter(lambda number: number < 3, numbers)
+    # filtered_numbers = list(an_iterator)
+    found_executions = [execution for execution in trade.executions if execution.id == id]
+    if not found_executions: 
+        raise HTTPException(status_code=404, detail=error_messages.error_execution_not_found)
+    crud.execution.update_entity(found_executions[0], execution_in)
+    trade = crud.trade.update_executions(db=db, trade=trade)
+    # TODO should create first execution too
+    return trade
+
+@router.delete("/{trade_id}/executions/{id}", response_model=schemas.Trade)
+def delete_execution(
+    *,
+    db: Session = Depends(deps.get_db),
+    trade_id: int,
+    id: int,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Delete an execution from trade.
+    """
+    trade = crud.trade.get(db=db, id=trade_id)
     if not trade:
         raise HTTPException(status_code=404, detail=error_messages.error_trade_not_found)
     if not crud.user.is_superuser(current_user) and (trade.portfolio.owner_id != current_user.id):
         raise HTTPException(status_code=403, detail=error_messages.error_not_enough_permission)
     
-    trade = crud.trade.add_executions(db=db, trade=trade, executions=executions)
-    # TODO should create first execution too
+    found_executions = [execution for execution in trade.executions if execution.id == id]
+    if not found_executions: 
+        raise HTTPException(status_code=404, detail=error_messages.error_execution_not_found)
+    trade.executions.remove(found_executions[0])
+    # trade = crud.trade.remove(db=db, id=id)
+    trade = crud.trade.update_executions(db=db, trade=trade)
     return trade

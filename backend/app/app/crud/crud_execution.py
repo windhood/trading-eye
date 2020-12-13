@@ -1,4 +1,5 @@
-from typing import List
+from app.models.trade import Trade
+from typing import List, Union, Dict, Any
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
@@ -29,6 +30,18 @@ class CRUDExecution(CRUDBase[Execution, ExecutionCreate, ExecutionUpdate]):
             .limit(limit)
             .all()
         )
-
+    def update_entity(
+        self, 
+        db_obj: Execution,
+        obj_in: Union[ExecutionUpdate, Dict[str, Any]]) -> Execution:
+        obj_data = jsonable_encoder(db_obj)
+        if isinstance(obj_in, dict):
+            update_data = obj_in
+        else:
+            update_data = obj_in.dict(exclude_unset=True)
+        for field in obj_data:
+            if field in update_data:
+                setattr(db_obj, field, update_data[field])
+        return db_obj
 
 execution = CRUDExecution(Execution)
