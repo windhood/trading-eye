@@ -148,7 +148,7 @@ def update_execution(
     """
     Update execution in a trade.
     """
-    trade = crud.trade.get(db=db, trade_id=id)
+    trade = crud.trade.get(db=db, id=trade_id)
     if not trade:
         raise HTTPException(status_code=404, detail=error_messages.error_trade_not_found)
     if not crud.user.is_superuser(current_user) and (trade.portfolio.owner_id != current_user.id):
@@ -160,7 +160,7 @@ def update_execution(
     if not found_executions: 
         raise HTTPException(status_code=404, detail=error_messages.error_execution_not_found)
     crud.execution.update_entity(found_executions[0], execution_in)
-    trade = crud.trade.update_executions(db=db, trade=trade)
+    trade = crud.trade.update_execution(db=db, trade=trade)
     # TODO should create first execution too
     return trade
 
@@ -186,5 +186,5 @@ def delete_execution(
         raise HTTPException(status_code=404, detail=error_messages.error_execution_not_found)
     trade.executions.remove(found_executions[0])
     # trade = crud.trade.remove(db=db, id=id)
-    trade = crud.trade.update_executions(db=db, trade=trade)
+    trade = crud.trade.update_execution(db=db, trade=trade)
     return trade

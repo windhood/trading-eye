@@ -65,7 +65,7 @@ class CRUDTrade(CRUDBase[Trade, TradeCreate, TradeCreate]):
             entity = Execution(**jsonable_encoder(ex), ticker=trade.ticker)
             entity.executed_at = ex.executed_at
             trade.executions.append(entity)
-        #execution_models: List[Execution] = [Execution(**jsonable_encoder(el), executed_at=el.executed_at, ticker=trade.ticker) for el in executions]
+        #execution_models: List[Execution] = [Execution(**jsonable_encoder(el), ticker=trade.ticker) for el in executions]
         #for ex in execution_models:
         #    print(f'object is {ex}, executed_at type is {type(ex.executed_at)}, isinstanceof: {isinstance(ex.executed_at, str)}')
         #trade.executions.extend(execution_models)
