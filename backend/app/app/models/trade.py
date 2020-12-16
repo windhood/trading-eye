@@ -44,7 +44,7 @@ class Trade(Base, TimestampMixin):
     executions = relationship("Execution", back_populates="trade")
     
     def __repr__(self): 
-        return f'tiker={self.ticker}, executions={self.executions}'
+        return f'ticker={self.ticker}, executions={self.executions}'
      
     def calculate_trade_details(self) -> None:         
         #customObjects.sort(key=lambda x: x.date, reverse=True)        
