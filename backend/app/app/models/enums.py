@@ -6,6 +6,15 @@ class TradeType(str, Enum):
     CASH_IN = "CASH_IN"
     CASH_OUT = "CASH_OUT"
 
+class AdjustmentType(str, Enum):
+    DEPOSIT = "DEPOSIT"
+    WITHDRAW = "WITHDRAW"
+    INTERNAL_TRANSFER = "INTERNAL_TRANSFER"
+    BROKER_INTEREST_PAID = "BROKER_INTEREST_PAID"
+    ACCOUNT_TRANSFER = "ACCOUNT_TRANSFER"
+    OTHER_FEES = "OTHER_FEES"
+    INTEREST_YOU_PAID = "INTEREST_YOU_PAID"
+
 class TradeStatus(str, Enum):
     OPEN = "OPEN"
     WIN = "WIN"

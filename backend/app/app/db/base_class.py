@@ -10,7 +10,8 @@ class Base:
     # Generate __tablename__ automatically
     @declared_attr
     def __tablename__(cls) -> str:
-        return cls.__name__.lower()
+        # return cls.__name__.lower()
+        return ''.join(['_'+i.lower() if i.isupper() else i for i in cls.__name__]).lstrip('_') 
     
 class TimestampMixin:
     """ Mixin to add update_at and created_at columns
