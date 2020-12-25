@@ -33,7 +33,11 @@ class Trade(Base, TimestampMixin):
     net_profit = Column(Float, nullable=True) 
     setup = Column(String, nullable=True)
     rmultiple = Column(Float, nullable=True)
+    return_rate = Column(Float, nullable=True)
     commissions = Column(Float, default=0.0)
+    initial_stop = Column(Float, nullable=True)
+    initial_shares = Column(Integer, nullable=True)
+    initial_price = Column(Float, nullable=True)
     portfolio_balance = Column(Float)
     status = Column(Enum(TradeStatus))
     notes = Column(Text, nullable=True)
@@ -56,12 +60,17 @@ class Trade(Base, TimestampMixin):
         exit_shares = 0
         entry_total = 0
         exit_total = 0
+        initial_total = 0
+        initial_shares = 0
         for execution in self.executions:
             if execution.commission:
                 self.commissions += execution.commission
             if execution.type == ExecutionType.BUY:
                 entry_shares +=execution.shares
                 entry_total += execution.price * execution.shares
+                if execution.initial_position:
+                    initial_total += execution.shares * execution.price
+                    initial_shares += execution.shares
                 
             elif execution.type == ExecutionType.SELL:
                 exit_shares +=execution.shares
@@ -69,13 +78,17 @@ class Trade(Base, TimestampMixin):
         
         self.total_shares = entry_shares
         self.open_shares = entry_shares - exit_shares
-        
+        self.initial_shares = initial_shares
+        if self.initial_shares >0 :
+            self.initial_price = initial_total / initial_shares
+
         if entry_shares > 0:
             self.entry_price = entry_total/entry_shares
         if exit_shares > 0:
             self.exit_price = exit_total/exit_shares
             # realized net profit
             self.net_profit = exit_shares * (self.exit_price - self.entry_price) - self.commissions
+            self.return_rate = (self.exit_price - self.entry_price)/self.entry_price
 
 
         if self.open_shares == 0:
@@ -93,5 +106,5 @@ class Trade(Base, TimestampMixin):
         # calculate r-multile
         if self.open_shares == 0 and self.stop_price:
             self.rmultiple = (self.exit_price - self.entry_price)/(self.entry_price - self.stop_price)
-
+        
         

@@ -20,10 +20,15 @@ class TradeBase(BaseModel):
     stop_price: Optional[float] = None
     target_price: Optional[float] = None
     net_profit: Optional[float] = None
+    return_rate: Optional[float] = None
     setup: Optional[str] = None
     rmultiple: Optional[float] = None
     commissions: Optional[float] = 0.0
     portfolio_balance: Optional[float] = None
+    notes: Optional[str] = None
+    initial_stop: Optional[float] = None
+    initial_shares: Optional[int] = None
+    initial_price: Optional[float] = None
     notes: Optional[str] = None
 
     #portfolio_id = Column(Integer, ForeignKey("portfolio.id"))

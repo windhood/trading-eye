@@ -51,6 +51,7 @@ def create_trade(
     logging.debug(f"portfolio is: {portfolio}")
     # trade = crud.trade.create_with_owner(db=db, obj_in=trade_in, owner_id=current_user.id)
     # trade = crud.trade.create_with_portfolio(db=db, obj_in=trade_in, portfolio_id= trade_in.portfolio_id)
+    validate_new_trade(trade_in)
     trade = crud.trade.create_with_executions(db=db, obj_in=trade_in, portfolio=portfolio)
     # TODO should create first execution too
     return trade
@@ -188,3 +189,16 @@ def delete_execution(
     # trade = crud.trade.remove(db=db, id=id)
     trade = crud.trade.update_execution(db=db, trade=trade)
     return trade
+
+def validate_new_trade(trade_in: schemas.NewTrade) -> None:
+    if not trade_in.executions:
+        raise HTTPException(status_code=400, detail=error_messages.error_trade_bad_request)
+    trade_in.executions.sort(key=lambda x: x.executed_at.timestamp())
+    has_initial_position_flag = False
+    for exec in trade_in.executions:
+        if exec.initial_position:
+            has_initial_position_flag = True
+            break
+    if not has_initial_position_flag:
+        #raise HTTPException(status_code=400, detail=error_messages.error_trade_bad_request)
+        trade_in.executions[0].initial_position = True

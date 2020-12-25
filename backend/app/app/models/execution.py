@@ -1,8 +1,7 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Column, ForeignKey, Integer, String, Float, Enum, Text, DateTime
+from sqlalchemy import Column, ForeignKey, Integer, String, Float, Enum, Text, DateTime, Boolean
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.expression import null
 
 from app.db.base_class import Base, TimestampMixin
 from .enums import ExecutionType
@@ -21,6 +20,7 @@ class Execution(Base, TimestampMixin):
     target_price = Column(Float, nullable=True)
     type = Column(Enum(ExecutionType))
     executed_at = Column(DateTime)
+    initial_position = Column(Boolean, default=False, nullable=False)
     setup = Column(String, nullable=True)
     reason = Column(String, nullable=True)
     notes = Column(Text, nullable=True)
